@@ -36,6 +36,9 @@ class Player:
         self.inventory.append(action.action_push)
         self._inventory_set = set(self.inventory)
     
+    def set_location(self, coord):
+        self.location = coord
+
     def _get_str_available_actions(self):
         ret_str = ""
         for i in range(self._inventory_set):
@@ -169,3 +172,4 @@ class Player:
                 code[prepared_actions_count] = appended_action.copy()
                 prepared_actions_count += 1
         print("All done!")
+
