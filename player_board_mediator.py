@@ -3,6 +3,7 @@ import board
 class player_board_mediator:
     def __init__(self, board):
         self.board = board
+        self.board_display = board_display_func
     
     def is_barricaded(self, coord):
         return (board.barricade == self.board.get_item_at_index(coord))
@@ -18,3 +19,6 @@ class player_board_mediator:
         if(item_at_index == active_symbol):
             return False
         return True
+    
+    def show_board(self):
+        print(self.board)

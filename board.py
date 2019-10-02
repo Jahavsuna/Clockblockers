@@ -7,6 +7,7 @@ class Board:
 
     def __init__(self, size):
         self.cells = []
+        self.size = size
         for i in range(size):
             self.cells.append([])
     

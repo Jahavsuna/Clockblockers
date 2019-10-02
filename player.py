@@ -1,4 +1,5 @@
 import action
+import coordinate
 from os import system
 
 _DEFAULT_CODE_LENGTH = 5
@@ -7,6 +8,11 @@ _CODE_PREPARE_CURRENT_CODE = "Your code so far:"
 _CODE_PREPARE_INPUT_REQUEST = "Code action for section {}:"
 _INPUT_CODE_WRONG_VALUE = "Input code should be the index of the desired action."
 _MOVE_DIRECTION_PROMPT = "Choose move direction: (E)ast, (W)est, (N)orth, (S)outh."
+_PUSH_USER_SELECTION = "Choose another player/barricade to push."
+_COORDINATE_INPUT_FORMAT = "x,y:"
+_ILLEGAL_TARGET = "Target should be a player or barricade. Try again."
+_BARRICADE_USER_SELECTION = "Choose a barricade to remove it, or an unbarricaded tile to barricade it."
+_BARRICADE_LIMIT = "A maximum of 10 concurrent barricades are allowed."
 
 class Player:
     def __init__(self, name, symbol, pbm):
@@ -49,21 +55,64 @@ class Player:
             return False
         return True
     
-    def _Choose_selection_handler(self, selection):
+    def _is_input_coord_valid(self, user_coord):
+        target = user_coord.split(",")
+        if((len(target) != coordinate.coordinate.DIMENSIONS)
+        or (not target[0].isdigit() or not target[1].isdigit())):
+            return False
+        if((int(target[0]) < 1 or int(target[0] > self._mediator.board.size))
+        or (int(target[1]) < 1 or int(target[1] > self._mediator.board.size))):
+            return False
+        return True
+
+    def _choose_selection_handler(self, selection):
         action_type = type(self._inventory_set[code_selection - 1])
         if(action_type is action.action_move
         or action_type is action.action_double_move
         or action_type is action.action_machine_move):
             return self._move_handler()
         elif(action_type is action.action_push):
-            #Push handler - complex because of multiple choices
-            pass
+            return self._push_handler()
         elif(action_type is action.action_barricade):
-            #Barricade handler
-            pass
+            return self._barricade_handler()
+        else:
+            raise()
+    
+    def _barricade_handler(self):
+        print(_BARRICADE_USER_SELECTION)
+        print(_BARRICADE_LIMIT)
+        print(self._mediator.board)
+        target = ""
+        while(True):
+            target = input(_COORDINATE_INPUT_FORMAT)
+            if(self._is_input_coord_valid(target)):
+                print("Illegal input. Try again.")
+                continue
+            target = target.split(",")
+            target = coordinate.coordinate(int(target[0], int(target[1])))
+            returned_action = action.action_barricade()
+            returned_action.designate_target(target)
+            return returned_action
     
     def _push_handler(self):
-        #need to show board...
+        print(_PUSH_USER_SELECTION)
+        print(self._mediator.board)
+        target = ""
+        while(True):
+            target = input(_COORDINATE_INPUT_FORMAT)
+            if(self._is_input_coord_valid(target)):
+                print("Illegal input. Try again.")
+                continue
+            target = target.split(",")
+            target = coordinate.coordinate(int(target[0], int(target[1])))
+            if(not (self._mediator.is_barricaded(target) 
+            or self._mediator.is_other_player(target, self.symbol))):
+                print (_ILLEGAL_TARGET)
+                target = ""
+                continue
+            returned_action = action.action_push()
+            returned_action.designate_target(target)
+            return returned_action
     
     def _move_handler(self, move_type):
         move_direction = ""
@@ -116,3 +165,7 @@ class Player:
                         self.code[prepared_actions_count] = None
                         prepared_actions_count -= 1
                     continue
+                appended_action = self._choose_selection_handler(code_selection)
+                code[prepared_actions_count] = appended_action.copy()
+                prepared_actions_count += 1
+        print("All done!")

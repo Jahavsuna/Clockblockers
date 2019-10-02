@@ -9,6 +9,9 @@ class Action:
     
     def get_type(self):
         return "Uninitialized"
+    
+    def copy(self):
+        return Action()
 
 class action_move(Action):
     def __init__(self):
@@ -16,6 +19,9 @@ class action_move(Action):
 
     def get_type(self):
         return "Move action"
+    
+    def copy(self):
+        return action_move()
 
 class action_double_move(Action):
     def __init__(self):
@@ -23,6 +29,9 @@ class action_double_move(Action):
         
     def get_type(self):
         return "Double move action"
+    
+    def copy(self):
+        return action_double_move()
 
 class action_machine_move(Action):
     def __init__(self):
@@ -30,6 +39,9 @@ class action_machine_move(Action):
         
     def get_type(self):
         return "Machine move action"
+    
+    def copy(self):
+        return action_machine_move()
 
 class action_west(Action):
     def __init__(self):
@@ -96,9 +108,13 @@ class action_barricade(Action):
         self.top_row = "\/"
         self.bot_row = "/\\"
     
-    def designate_target(self, coord, is_add_action):
+    def designate_target(self, coord):
         self.target = coord
-        self.add_barricade = is_add_action
+    
+    def copy(self):
+        copy = action_barricade()
+        copy.designate_target(self.target)
+        return copy()
 
 class action_push(Action):
     def __init__(self):
@@ -107,3 +123,8 @@ class action_push(Action):
     
     def designate_target(self, coord):
         self.target = coord
+    
+    def copy(self):
+        copy = action_barricade()
+        copy.designate_target(self.target)
+        return copy()
