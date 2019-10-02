@@ -21,7 +21,9 @@ class Game_manager:
         self.player_list = []
         self.board = board.Board(board_size)
         for i in range(num_of_players):
+            self.symbol_to_player = {}
             self.player_list.append(self._add_player(i))
+            self._update_player_location(self.player_list[i], (board.Board.relative_start_positions[i] * board_size))
         self._create_time_cards()
         self.pointer_index = 0
         self.display_module = display_module
@@ -34,10 +36,9 @@ class Game_manager:
         p_symbol = input(_ADD_PLAYER_SYMBOL.format(player_index + 1))
         while(not self._is_player_symbol_ok):
             p_symbol = input(_ADD_PLAYER_SYMBOL.format(player_index))
-        return player.Player(p_name, p_symbol, player_board_mediator(self.board))
-
-    def _player_setup(self, board, player_count):
-        pass
+        new_player = player.Player(p_name, p_symbol, player_board_mediator(self.board))
+        self.symbol_to_player[p_symbol] = new_player
+        return new_player
 
     def _is_player_symbol_ok(self, new_symbol):
         if(len(new_symbol) != 1):
@@ -59,6 +60,11 @@ class Game_manager:
         self.available_cards.append(time_card.card_next_two())
         self.available_cards.append(time_card.card_prev_one())
         self.available_cards.append(time_card.card_prev_two())
+    
+    def _update_player_location(self, player_symbol, new_location):
+        self.board.remove_at_index(self.symbol_to_player[player_symbol].location)
+        self.symbol_to_player[player_symbol].set_location(new_location)
+        self.board.place_at_index(new_location, player_symbol)
     
     def _get_str_available_time_cards(self):
         print_str = ""
@@ -100,6 +106,6 @@ class Game_manager:
 
 if __name__ == "__main__":
     #tests
-    g = Game_manager(1)
-    g.run_game()
+    #g = Game_manager(1)
+    #g.run_game()
     print("end!")
