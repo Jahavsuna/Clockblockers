@@ -17,13 +17,14 @@ _BOARD_SIDE_LENGTH = 9
 _RESERVED_SYMBOLS: ['[', ']', 'X', 'x', '|', '-', '^', '$', '@']
 
 class Game_manager:
-    def __init__(self, num_of_players, board_size = _BOARD_SIDE_LENGTH):
+    def __init__(self, num_of_players, display_module, board_size = _BOARD_SIDE_LENGTH):
         self.player_list = []
         self.board = board.Board(board_size)
         for i in range(num_of_players):
             self.player_list.append(self._add_player(i))
         self._create_time_cards()
         self.pointer_index = 0
+        self.display_module = display_module
 
     def _add_player(self, player_index):
         p_name = input(_ADD_PLAYER_STRING.format(player_index + 1))
@@ -33,7 +34,7 @@ class Game_manager:
         p_symbol = input(_ADD_PLAYER_SYMBOL.format(player_index + 1))
         while(not self._is_player_symbol_ok):
             p_symbol = input(_ADD_PLAYER_SYMBOL.format(player_index))
-        return player.Player(p_name, p_symbol, player_board_mediator())
+        return player.Player(p_name, p_symbol, player_board_mediator(self.board))
 
     def _player_setup(self, board, player_count):
         pass
