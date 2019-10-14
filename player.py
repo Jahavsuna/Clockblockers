@@ -75,9 +75,9 @@ class Player:
         or action_type is action.action_machine_move):
             return self._move_handler()
         elif(action_type is action.action_push):
-            return self._push_handler()
+            return action.action_push                   #self._push_handler()
         elif(action_type is action.action_barricade):
-            return self._barricade_handler()
+            return action.action_barricade              #self._barricade_handler()
         else:
             raise()
     
@@ -172,4 +172,15 @@ class Player:
                 code[prepared_actions_count] = appended_action.copy()
                 prepared_actions_count += 1
         print("All done!")
-
+    
+    def get_code_string(self):
+        for c in self.code:
+            print_str += "[" + c.top_row + "] "
+        print_str += '\n'
+        for c in self.code:
+            print_str += "[" + c.bot_row + "] "
+        print_str += '\n'
+        for i in range(len(self.code)):
+            print_str += "({})  ".format(i)
+        print_str += '\n'
+        return print_str
